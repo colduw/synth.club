@@ -1,0 +1,37 @@
+name: Linting
+
+on:
+  push:
+    paths:
+      - '**/*.go'
+      - '**/*.mod'
+  pull_request:
+    paths:
+      - '**/*.go'
+      - '**/*.mod'
+
+jobs:
+  golangci-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+        
+      - name: Setup and run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+      
+      - name: Install vulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run vulncheck
+        run: govulncheck -show verbose ./...
+      
+      - name: Test build
+        run: go build main.go
