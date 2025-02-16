@@ -37,7 +37,7 @@ func (ch *CHandle) BeforeSave(*gorm.DB) error {
 		return errHandleNil
 	}
 
-	if ch.DID == "" {
+	if ch.DID == "" || !strings.HasPrefix(ch.DID, "did:") {
 		return errDIDNil
 	}
 

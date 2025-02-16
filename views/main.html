@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>synth.club — Vanity handles for Bluesky</title>
+
+    <meta name="theme-color" content="#0c01d0">
+    <meta property="og:site_name" content="synth.club">
+    <meta property="og:title" content="synth.club — Vanity handles for Bluesky">
+    <meta property="og:url" content="https://synth.club">
+
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:title" content="synth.club — Vanity handles for Bluesky">
+    <meta property="twitter:site" content="@coldunwanted.net">
+    <meta property="twitter:creator" content="@coldunwanted.net">
+
+    <meta property="og:description" content="Register for a synth.club vanity handle for Bluesky">
+
+    <link rel="stylesheet" href="/assets/main.css">
+</head>
+<body>
+    <div class="oContainer">
+        <div class="iContainer">
+            <p>Register a <span class="underlinedText">synth.club</span> handle for Bluesky</p>
+            <hr>
+            <form id="registrationForm" action="/doRegister" method="post">
+                <p class="alignText">Your Current Handle</p>
+                <input name="oldHandle" id="oldHandle" type="text" placeholder="handle.bsky.social" required>
+
+                <p class="alignText">Your Desired Handle</p>
+                <div class="showDomainRow">
+                    <input name="newHandle" id="newHandle" type="text" minlength="3" maxlength="63" placeholder="new-handle" required>
+                    <span class="domainText">.synth.club</span>
+                </div>
+
+                <p class="alignText">* Discord Domain Connections Code</p>
+                <input name="dhCode" id="dhCode" type="text" minlength="43" maxlength="43" placeholder="dh=abcdef0123456789">
+                <p class="smallText">* = Not required, but you won't be able to add/change it later!</p>
+
+                <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-size="flexible" data-theme="dark"></div>
+
+                <div class="submitDiv">
+                    <input type="submit" value="Register">
+                    <hr>
+                </div>
+
+                <p id="msgText" class="noDisplay"></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="/assets/main.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</body>
+</html>
