@@ -29,7 +29,7 @@ type (
 	}
 )
 
-const multiPartFormLimit = 10 * (1024 * 1024)
+const maxReadLimit = 20 * 1024
 
 var (
 	mainTemplate     = template.Must(template.ParseFiles("./views/main.html"))
@@ -135,9 +135,11 @@ func errorPage(w http.ResponseWriter, errorMessage string) {
 }
 
 func regVerify(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxReadLimit)
+
 	w.Header().Set("Content-Type", "application/json")
 
-	if parseErr := r.ParseMultipartForm(multiPartFormLimit); parseErr != nil {
+	if parseErr := r.ParseMultipartForm(maxReadLimit); parseErr != nil {
 		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "Failed to parse form"})
 		return
 	}
@@ -162,6 +164,8 @@ func regVerify(w http.ResponseWriter, r *http.Request) {
 }
 
 func doRegister(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxReadLimit)
+
 	if parseErr := r.ParseForm(); parseErr != nil {
 		errorPage(w, "Failed to parse form")
 		return
