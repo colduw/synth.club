@@ -29,13 +29,14 @@ linters-settings:
     check-blank: true
     disable-default-exclusions: true
     exclude-functions:
-      - 'fmt.Fprint' # This shouldn't fail
-      - '(net/http.ResponseWriter).Write' # This shouldn't fail
-      - '(io.ReadCloser).Close' # To have the same effect as EXC0001, for http response body closes. This shouldn't fail
-      - '(*html/template.Template).Execute' # This shouldn't fail
+      - '(io.ReadCloser).Close' # To have the same effect as EXC0001, for http response body closes, which is checked by bodyclose
+      - 'fmt.Fprint' # see below
+      - '(net/http.ResponseWriter).Write' # see below
+      - '(*html/template.Template).Execute' # see below
+      - '(*encoding/json.Encoder).Encode' # Most of these shouldn't fail
 
-  errchkjson:
-    report-no-exported: true
+  # errchkjson:
+  #   report-no-exported: true
 
   exhaustive:
     check:
@@ -66,7 +67,7 @@ linters-settings:
 
   gosec:
     excludes:
-      - G104 # Already provided by errcheck and revive
+      - G104 # Already provided by errcheck
     config:
       global:
         show-ignored: true
@@ -130,13 +131,10 @@ linters-settings:
       - name: exported
         disabled: true
       - name: unhandled-error
-        arguments: ['html/template.Template.Execute', 'net/http.ResponseWriter.Write', 'fmt.Fprint']
+        disabled: true
 
   tagalign:
     strict: true
-
-  tenv:
-    all: true
 
   testifylint:
     enable-all: true
@@ -173,7 +171,7 @@ linters:
     - dupword
     - durationcheck
     - err113
-    - errchkjson
+    # - errchkjson
     - errname
     - errorlint
     - exhaustive
@@ -235,7 +233,6 @@ linters:
     - sqlclosecheck
     - stylecheck
     - tagalign
-    - tenv
     - testableexamples
     - testifylint
     - testpackage
