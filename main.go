@@ -29,6 +29,8 @@ type (
 	}
 )
 
+const multiPartFormLimit = 10 * (1024 * 1024)
+
 var (
 	mainTemplate     = template.Must(template.ParseFiles("./views/main.html"))
 	errorTemplate    = template.Must(template.ParseFiles("./views/error.html"))
@@ -60,7 +62,7 @@ func main() {
 
 	sMux := http.NewServeMux()
 	sMux.HandleFunc("GET /", indexPage)
-	sMux.HandleFunc("GET /{username}", redirToBsky)
+	sMux.HandleFunc("GET /{username}/", redirToBsky)
 	sMux.HandleFunc("GET /{username}/.well-known/atproto-did", getProtogen)
 	sMux.HandleFunc("GET /{username}/.well-known/discord", getDiscord)
 
@@ -135,19 +137,23 @@ func errorPage(w http.ResponseWriter, errorMessage string) {
 func regVerify(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	if parseErr := r.ParseForm(); parseErr != nil {
+	if parseErr := r.ParseMultipartForm(multiPartFormLimit); parseErr != nil {
 		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "Failed to parse form"})
 		return
 	}
 
+	var didCount int64
 	didHelper := r.FormValue("didHelper")
-	if database.Db().Model(&database.CHandle{}).Where("did = ?", didHelper).RowsAffected != 0 {
+	database.Db().Model(&database.CHandle{}).Where("did = ?", didHelper).Count(&didCount)
+	if didCount != 0 {
 		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "DID is already registered"})
 		return
 	}
 
+	var handleCount int64
 	newHandle := strings.ToLower(r.FormValue("newHandle"))
-	if database.Db().Model(&database.CHandle{}).Where("handle = ?", newHandle).RowsAffected != 0 {
+	database.Db().Model(&database.CHandle{}).Where("handle = ?", newHandle).Count(&handleCount)
+	if handleCount != 0 {
 		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "Handle is already registered"})
 		return
 	}
