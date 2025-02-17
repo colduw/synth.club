@@ -144,16 +144,26 @@ func regVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var didCount int64
 	didHelper := r.FormValue("didHelper")
+	if len(didHelper) > 512 {
+		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "Invalid DID"})
+		return
+	}
+
+	var didCount int64
 	database.Db().Model(&database.CHandle{}).Where("did = ?", didHelper).Count(&didCount)
 	if didCount != 0 {
 		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "DID is already registered"})
 		return
 	}
 
-	var handleCount int64
 	newHandle := strings.ToLower(r.FormValue("newHandle"))
+	if len(newHandle) < 3 || len(newHandle) > 63 {
+		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "Invalid Handle"})
+		return
+	}
+
+	var handleCount int64
 	database.Db().Model(&database.CHandle{}).Where("handle = ?", newHandle).Count(&handleCount)
 	if handleCount != 0 {
 		json.NewEncoder(w).Encode(map[string]any{"isSuccess": false, "errorMessage": "Handle is already registered"})
@@ -240,6 +250,10 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 
 func getProtogen(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("username")
+	if len(username) < 3 || len(username) > 63 {
+		http.Error(w, "Invalid Handle", http.StatusBadRequest)
+		return
+	}
 
 	var bHandle database.CHandle
 	dbErr := database.Db().Model(&database.CHandle{}).Where("handle = ?", username).First(&bHandle).Error
@@ -258,6 +272,10 @@ func getProtogen(w http.ResponseWriter, r *http.Request) {
 
 func getDiscord(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("username")
+	if len(username) < 3 || len(username) > 63 {
+		http.Error(w, "Invalid Handle", http.StatusBadRequest)
+		return
+	}
 
 	var dHandle database.CHandle
 	dbErr := database.Db().Model(&database.CHandle{}).Where("handle = ?", username).First(&dHandle).Error
