@@ -204,7 +204,7 @@ func doRegister(w http.ResponseWriter, r *http.Request) {
 	cfForm := url.Values{}
 	cfForm.Set("secret", cfSecretToken)
 	cfForm.Set("response", r.FormValue("cf-turnstile-response"))
-	cfForm.Set("remoteip", r.Header.Get("cf-connecting-ip"))
+	cfForm.Set("remoteip", r.Header.Get("CF-Connecting-IP"))
 
 	cfBuffer := bytes.NewBufferString(cfForm.Encode())
 
