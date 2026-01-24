@@ -1,0 +1,29 @@
+services:
+  web:
+    container_name: synthClub
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_started
+    volumes:
+      - certs:/app/certs
+  db:
+    container_name: synthDb
+    image: postgres:latest
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - 5432:5432
+volumes:
+  certs:
+    name: certs

@@ -77,7 +77,7 @@ func main() {
 	manager := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("synth.club"),
-		Cache:      autocert.DirCache("certs/"),
+		Cache:      autocert.DirCache("certs"),
 	}
 
 	go func() {

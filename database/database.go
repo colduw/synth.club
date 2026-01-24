@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -29,7 +30,12 @@ func Db() *gorm.DB {
 		var err error
 
 		for range maxRetry {
-			db, err = gorm.Open(postgres.Open(os.Getenv("DB_DSN")), &gorm.Config{
+			db, err = gorm.Open(postgres.Open(fmt.Sprintf(
+				"user=%s password=%s host=%s port=5432 dbname=%s",
+				os.Getenv("DB_USER"),
+				os.Getenv("DB_PASSWORD"),
+				os.Getenv("DB_HOST"),
+				os.Getenv("DB_NAME"))), &gorm.Config{
 				Logger: lInterface,
 			})
 			if err != nil {
