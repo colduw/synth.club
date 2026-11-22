@@ -11,7 +11,7 @@ RUN CGO_ENABLED=0 go build main.go
 
 FROM ubuntu:latest AS final
 
-RUN apt update && apt upgrade && apt install -y ca-certificates
+RUN apt update -y && apt upgrade -y && apt install -y ca-certificates
 COPY --from=builder /app/ /app/
 
 WORKDIR /app
